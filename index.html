@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Campora - The trusted campus marketplace. Buy and sell with confidence on your campus." />
+    <meta name="keywords" content="campus marketplace, student buy sell, university marketplace, college marketplace" />
+    <meta name="author" content="Campora" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Campora - Trusted Campus Marketplace" />
+    <meta property="og:description" content="Buy and sell on campus with confidence. Every seller is verified, every product is inspected." />
+    <meta property="og:site_name" content="Campora" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Campora - Trusted Campus Marketplace" />
+    <meta name="twitter:description" content="Buy and sell on campus with confidence." />
+    
+    <!-- Security -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.paystack.co https://www.googletagmanager.com https://www.google-analytics.com https://apis.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://firebasestorage.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://api.paystack.co https://www.google-analytics.com https://www.googleapis.com https://securetoken.googleapis.com; frame-src 'self' https://js.paystack.co https://accounts.google.com https://*.google.com https://campora-c170b.firebaseapp.com;" />
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#10b981" />
+    
+    <title>Campora - Trusted Campus Marketplace</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <script>
+      (function() {
+        try {
+          var theme = JSON.parse(localStorage.getItem('campora-theme')).state.theme;
+          var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) document.documentElement.classList.add('dark');
+        } catch(e) {}
+      })();
+    </script>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

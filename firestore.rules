@@ -1,0 +1,119 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isSeller() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['seller', 'admin'];
+    }
+
+    function isRunner() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['runner', 'admin'];
+    }
+
+    function isOrderParty(orderData) {
+      return isAuthenticated() && (
+        request.auth.uid == orderData.buyerId ||
+        request.auth.uid == orderData.sellerId ||
+        request.auth.uid == orderData.runnerId
+      );
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if resource.data.status == 'active' || isOwner(resource.data.sellerId) || isAdmin();
+      allow create: if isAuthenticated() && isSeller();
+      allow update: if isOwner(resource.data.sellerId) || isAdmin();
+      allow delete: if isOwner(resource.data.sellerId) || isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow read: if isOrderParty(resource.data) || isAdmin();
+      allow create: if isAuthenticated() && 
+        request.resource.data.buyerId == request.auth.uid;
+      allow update: if isAdmin() || 
+        (isAuthenticated() && 
+          (request.auth.uid == resource.data.buyerId || 
+           request.auth.uid == resource.data.sellerId ||
+           request.auth.uid == resource.data.runnerId));
+    }
+
+    match /deliveries/{deliveryId} {
+      allow read: if isOwner(resource.data.runnerId) || isAdmin();
+      allow create: if false;
+      allow update: if isOwner(resource.data.runnerId) || isAdmin();
+    }
+
+    match /verifications/{verificationId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if resource.data.isVisible || isOwner(resource.data.reviewerId) || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isOwner(resource.data.reviewerId) || isAdmin();
+      allow delete: if isOwner(resource.data.reviewerId) || isAdmin();
+    }
+
+    match /disputes/{disputeId} {
+      allow read: if isOwner(resource.data.filedBy) || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.userId);
+      allow update: if isOwner(resource.data.userId);
+    }
+
+    match /wishlists/{wishlistId} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    match /runners/{runnerId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isOwner(runnerId) || isAdmin();
+    }
+
+    match /inspections/{inspectionId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+    }
+
+    match /campuses/{campusId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
